@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="guistyles.css">
+    <title>Audio Project</title>
+</head>
+<body>
+    <h1>Audio Project Interface</h1>
+
+    <div class="display-container">
+        <div id="note-display">
+            <span id="prior-note"></span> | 
+            <span id="current-note"></span> | 
+            <span id="next-note"></span>
+        </div>
+    </div>
+
+    <div class="slider-container">
+        <div class="slider-bar"></div>
+        <div id="slider-indicator" class="slider-indicator"></div>
+        <div class="tick-marks">
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+        </div>
+    </div>
+
+    <div>
+        <label for="bpm">BPM:</label>
+        <input type="number" id="bpm" value="120">
+        <label for="metronome-duration">Duration (s):</label>
+        <input type="number" id="metronome-duration" value="60">
+        <button onclick="startMetronome()">Start Metronome</button>
+        <button onclick="stopMetronome()">Stop Metronome</button>
+    </div>
+
+    <div>
+        <label for="record-duration">Recording Duration (s):</label>
+        <input type="number" id="record-duration" value="10">
+        <input type="text" id="output-file" placeholder="output.wav">
+        <button onclick="startRecording()">Start Recording</button>
+        <button onclick="stopRecording()">Stop Recording</button>
+    </div>
+
+    <script>
+        function updateData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update note information
+                    document.getElementById('current-note').textContent = data.note;
+                    document.getElementById('next-note').textContent = data.next_note;
+                    document.getElementById('prior-note').textContent = data.prior_note;
+
+                    // Update slider position
+                    const sliderIndicator = document.getElementById('slider-indicator');
+                    const sliderPercentage = data.slider_position;
+                    sliderIndicator.style.left = `${sliderPercentage}%`;
+                    sliderIndicator.style.display = 'block'; // Ensure the indicator is visible
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function startMetronome() {
+            const bpm = document.getElementById('bpm').value;
+            const duration = document.getElementById('metronome-duration').value;
+            fetch('/metronome/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ bpm: parseInt(bpm), duration: parseInt(duration) })
+            });
+        }
+
+        function stopMetronome() {
+            fetch('/metronome/stop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+
+        function startRecording() {
+            const duration = document.getElementById('record-duration').value;
+            const outputFile = document.getElementById('output-file').value;
+            fetch('/record/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ duration: parseInt(duration), output_file: outputFile })
+            });
+        }
+
+        function stopRecording() {
+            fetch('/record/stop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+
+        // Update the data every second
+        setInterval(updateData, 1000);
+    </script>
+</body>
+</html>
