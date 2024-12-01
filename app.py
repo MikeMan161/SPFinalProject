@@ -25,7 +25,7 @@ def get_data():
         'slider_position': slider_position,
         'octave': octave
     })
-
+"""
 @app.route('/metronome/start', methods=['POST'])
 def start_metronome():
     bpm = request.json.get('bpm', 120)
@@ -49,6 +49,6 @@ def start_recording():
 def stop_recording():
     stop_event.set()
     return jsonify({'status': 'Recording stopped'})
-
+"""
 if __name__ == "__main__":
     app.run(debug=True)
