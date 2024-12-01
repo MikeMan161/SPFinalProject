@@ -4,7 +4,7 @@ import pyaudio
 
 class Input:
     def __init__(self):
-        self.BUFFER_SIZE = 8820
+        self.BUFFER_SIZE = 44100
         self.SAMPLE_RATE = 44100
         self.REF_FREQ = 440 # A4
         self.REF_SEMITONE = 57 # Number of semitones of A4 from first
