@@ -7,7 +7,6 @@ class Input:
         self.BUFFER_SIZE = 8820
         self.SAMPLE_RATE = 44100
         self.REF_FREQ = 440 # A4
-        self.REF_OCTAVE = 4
         self.REF_SEMITONE = 57 # Number of semitones of A4 from first
         # b := flat; # := sharp
         self.notes = ["A","A#|Bb","B","C","C#|Db","D","D#|Eb","E","F","F#|Gb","G","G#|Ab"]
@@ -36,21 +35,46 @@ class Input:
             # Number of semitones from A4
             semitone_offset = round(np.log2(frequency / self.REF_FREQ) * 12)
 
+        prior_note_freq = self.REF_FREQ * 2 ** ((semitone_offset - 1) / 12)
+        next_note_freq = self.REF_FREQ * 2 ** ((semitone_offset + 1) / 12)
+        closest_note_freq = self.REF_FREQ * 2 ** (semitone_offset / 12)
+        closest_diff_prior = closest_note_freq - prior_note_freq
+        next_diff_closest = next_note_freq - closest_note_freq
+        slider_fraction = 0
+        if frequency <= closest_note_freq:
+            freq_diff_prior = frequency - prior_note_freq
+            slider_fraction += (freq_diff_prior / closest_diff_prior) * 0.5
+        else:
+            freq_diff_closest = frequency - closest_note_freq
+            print(f"next - closest: {next_diff_closest}; freq - closest: {freq_diff_closest}")
+            slider_fraction += 0.5 + (freq_diff_closest / next_diff_closest) * 0.5
+        slider_percent = np.round(slider_fraction * 100)
+
         octave = 0
         note = ""
+        prior_note = ""
+        next_note = ""
         if semitone_offset is not np.nan:
             note_idx = semitone_offset % 12
             note = self.notes[note_idx]
+
+            prior_note_idx = note_idx - 1 if note_idx != 0 else 11
+            next_note_idx = note_idx + 1 if note_idx != 11 else 0
+
+            prior_note = self.notes[prior_note_idx]
+            next_note = self.notes[next_note_idx]
 
             octave = (self.REF_SEMITONE + semitone_offset) // 12
 
         if octave < 0: octave = 0
 
-        return frequency, note, octave
+        if octave == 0 and note == "A": prior_note = ""
+
+        return frequency, note, next_note, prior_note, slider_percent, octave
 
 
 if __name__ == "__main__":
     input = Input()
     while True:
-        f, n, o = input.get_musical_values()
-        print(f"Freq: {f}; Note: {n}; Octave: {o}")
+        f, n, nn, pn, sp, o = input.get_musical_values()
+        print(f"Freq: {f}; Note: {n}; Octave: {o}, next note: {nn}, prior note: {pn}, slider percent: {sp}")
