@@ -46,7 +46,6 @@ class Input:
             slider_fraction += (freq_diff_prior / closest_diff_prior) * 0.5
         else:
             freq_diff_closest = frequency - closest_note_freq
-            print(f"next - closest: {next_diff_closest}; freq - closest: {freq_diff_closest}")
             slider_fraction += 0.5 + (freq_diff_closest / next_diff_closest) * 0.5
         slider_percent = np.round(slider_fraction * 100)
 
