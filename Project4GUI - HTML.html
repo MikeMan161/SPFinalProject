@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Note GUI</title>
+    <link rel="stylesheet" href="guistyles.css"> 
+</head>
+<body>
+    <h1>Music Note GUI</h1>
+    <div class="display-container">
+        <div class="display-item">
+            <strong>Note:</strong> <span id="note-display">-</span>
+        </div>
+        <div class="display-item">
+            <strong>Frequency (Hz):</strong> <span id="frequency-display">-</span>
+        </div>
+        <div class="display-item">
+            <strong>Octave:</strong> <span id="octave-display">-</span>
+        </div>
+    </div>
+    <div class="slider-container">
+        <div class="slider-bar"></div>
+        <div class="slider-indicator" id="slider-indicator"></div>
+        <div class="tick-marks">
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+            <div class="tick"></div>
+        </div>
+    </div>
+    <script>
+        const sliderIndicator = document.getElementById('slider-indicator');
+        const noteDisplay = document.getElementById('note-display');
+        const frequencyDisplay = document.getElementById('frequency-display');
+        const octaveDisplay = document.getElementById('octave-display');
+
+        // Function to fetch data from the Flask server
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                const data = await response.json();
+
+                const { note, frequency, octave } = data;
+
+                // Update text displays
+                noteDisplay.textContent = note || "";
+                frequencyDisplay.textContent = frequency ? frequency.toFixed(2) : "-";
+                octaveDisplay.textContent = octave || "-";
+
+                // Update slider position if frequency is available
+                if (frequency) {
+                    const sliderPosition = Math.min(Math.max((frequency - 430) * 3, 0), 360);
+                    sliderIndicator.style.left = `${sliderPosition}px`;
+                    sliderIndicator.style.display = 'block';
+                } else {
+                    sliderIndicator.style.display = 'none'; // Hide slider if no frequency
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // Fetch data every second
+        setInterval(fetchData, 100);
+    </script>
+    
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
