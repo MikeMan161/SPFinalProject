@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='guistyles.css') }}">
-    <title>Audio Project</title>
+    <title>Instrument Tuner</title>
 </head>
 <body>
-    <h1>Audio Project Interface</h1>
+    <h1>Instrument Tuner</h1>
 
+    <!-- Display Frequency, Octave, and Note -->
     <div class="display-container">
-        <div id="note-display">
-            <span id="prior-note"></span> | 
-            <span id="current-note"></span> | 
-            <span id="next-note"></span>
-        </div>
+        <div class="display-item">Frequency: <span id="frequency-value">-</span> Hz</div>
+        <div class="display-item">Octave: <span id="octave-value">-</span></div>
+        <div class="display-item">Note: <span id="note-value">-</span></div>
     </div>
 
+    <!-- Slider Container with Next and Prior Notes on Sides -->
     <div class="slider-container">
+        <div id="prior-note" class="note-label note-left">-</div>
         <div class="slider-bar"></div>
         <div id="slider-indicator" class="slider-indicator"></div>
+        <div id="next-note" class="note-label note-right">-</div>
         <div class="tick-marks">
             <div class="tick"></div>
             <div class="tick"></div>
@@ -56,12 +58,16 @@
             fetch('/data')
                 .then(response => response.json())
                 .then(data => {
-                    // Update note information
-                    document.getElementById('current-note').textContent = data.note;
-                    document.getElementById('next-note').textContent = data.next_note;
-                    document.getElementById('prior-note').textContent = data.prior_note;
+                    // Update Frequency, Octave, and Note
+                    document.getElementById('frequency-value').textContent = data.frequency.toFixed(2);
+                    document.getElementById('octave-value').textContent = data.octave;
+                    document.getElementById('note-value').textContent = data.note;
 
-                    // Update slider position
+                    // Update Prior and Next Notes
+                    document.getElementById('prior-note').textContent = data.prior_note;
+                    document.getElementById('next-note').textContent = data.next_note;
+
+                    // Update Slider Position
                     const sliderIndicator = document.getElementById('slider-indicator');
                     const sliderPercentage = data.slider_position;
                     sliderIndicator.style.left = `${sliderPercentage}%`;

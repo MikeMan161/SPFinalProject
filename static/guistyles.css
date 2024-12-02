@@ -34,21 +34,42 @@ h1 {
 
 .slider-container {
     position: relative;
-    width: 400px;
-    height: 80px;
+    width: 500px;  /* Increased width for proper spacing */
+    height: 100px; /* Increased height for better note positioning */
     background: #ffffff;
     border: 2px solid #ccc;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    margin-top: 20px;
+    padding: 0 20px; /* Extra padding to create space around the slider */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.note-left {
+    position: absolute;
+    left: -70px; /* Positioned to the left of the slider */
+    font-weight: bold;
+    color: #3a3a3a;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+.note-right {
+    position: absolute;
+    right: -70px; /* Positioned to the right of the slider */
+    font-weight: bold;
+    color: #3a3a3a;
+    transform: translateY(-50%);
+    top: 50%;
 }
 
 .slider-bar {
-    position: absolute;
-    top: 50%;
-    width: 90%;
+    position: relative;
+    width: 80%;
     height: 6px;
     background: #3a3a3a;
-    left: 5%;
     border-radius: 3px;
     transform: translateY(-50%);
 }
@@ -68,8 +89,8 @@ h1 {
 .tick-marks {
     position: absolute;
     top: 50%;
-    width: 90%;
-    left: 5%;
+    width: 70%;
+    left: 15%;
     display: flex;
     justify-content: space-between;
     transform: translateY(15px);

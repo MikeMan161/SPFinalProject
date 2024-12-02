@@ -8,6 +8,8 @@ import time
 
 # Function to play the metronome
 def metronome(bpm, duration, stop_event):
+    print(bpm)
+    print(duration)
     """Plays a metronome click at the given BPM for the specified duration."""
     tick = AudioSegment.from_file('tick.wav')  # Load the tick sound
     interval = 60 / bpm  # Time interval between beats
@@ -23,7 +25,9 @@ def metronome(bpm, duration, stop_event):
                 play(tick)  # Play the tick sound
                 next_tick_time += interval  # Schedule the next tick
 
-            time.sleep(0.001)  # Small sleep for responsiveness
+            #time.sleep(0.001)  # Small sleep for responsiveness
+
+        stop_event.clear()
     except Exception as e:
         print(f"\nMetronome stopped due to: {e}")
 
@@ -43,6 +47,8 @@ def record_audio(duration, output_file, stop_event):
             chunk = sd.rec(int(sample_rate * 1), samplerate=sample_rate, channels=2, dtype='float64')
             sd.wait()
             recorded_frames.append(chunk)
+
+        stop_event.clear()
     except Exception as e:
         print(f"\nRecording stopped due to: {e}")
     
